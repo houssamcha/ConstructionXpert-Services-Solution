@@ -12,7 +12,30 @@ import metier.entities.Projet;
 
 public class ProjetDaoImpl implements IprojetDao {
 
-
+	@Override
+	public Projet creer(Projet p) {
+		Connection connection = SingletonConnection.getConnection();
+		try {
+			PreparedStatement ps=connection.prepareStatement("INSERT INTO PROJETS(nom,description,date_debut,date_fin,budget) VALUES (?,?,?,?,?)");
+			ps.setString(1, p.getNomProjet());
+			ps.setString(2, p.getDescription());
+			ps.setDate(3, p.getDateDebut());
+			ps.setDate(4, p.getDateFin());
+			ps.setDouble(5, p.getBudget());
+			
+			ps.executeUpdate();
+			PreparedStatement ps2=connection.prepareStatement
+					("SELECT MAX(ID) AS MAX_ID FROM PROJETS");
+			ResultSet rs=ps2.executeQuery();
+			if(rs.next()) {
+				p.setId(rs.getLong("MAX_ID"));
+			}
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return p;
+	}
 
 	@Override
 	public List<Projet> Afficher() {
