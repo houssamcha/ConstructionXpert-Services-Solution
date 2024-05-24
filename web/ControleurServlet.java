@@ -1,6 +1,8 @@
 package web;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.sql.Date;
 import java.util.List;
 
 import dao.IprojetDao;
@@ -30,5 +32,35 @@ public class ControleurServlet extends HttpServlet {
 			request.setAttribute("model", projets);
 			request.getRequestDispatcher("projet.jsp").forward(request, response);	
 		}
+
 	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		String path = request.getServletPath();
+
+		if(path.equals("/ajouter")) {
+
+			String nom = request.getParameter("nomProjet");
+			String description = request.getParameter("description");
+			Date dateDebut = Date.valueOf(request.getParameter("DateDebut"));
+			Date dateFin = Date.valueOf(request.getParameter("DateFin"));
+			double budget = Double.parseDouble(request.getParameter("budget"));
+
+			Projet newProject = new Projet(nom, description, dateDebut, dateFin, budget);
+			metier.creer(newProject);
+			response.sendRedirect(request.getContextPath() + "/home");
+
+			//request.getRequestDispatcher("Formulaire.jsp").forward(request, response);
+		}
+
+	}
+
+	private void Delete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		long id = Integer.parseInt(req.getParameter("id"));
+		metier.Supprimer(id);
+		resp.sendRedirect(req.getContextPath() + "/home");
+	}
+
 }
